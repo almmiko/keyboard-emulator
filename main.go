@@ -1,11 +1,11 @@
 package main
 
 import (
-	"os"
-	"fmt"
-	"time"
 	"flag"
+	"fmt"
 	"github.com/go-vgo/robotgo"
+	"os"
+	"time"
 )
 
 func main() {
@@ -19,12 +19,20 @@ func main() {
 
 	flag.Parse()
 
+	done := make(chan bool)
+
 	if *timeout > 0 {
 		time.Sleep(time.Millisecond * time.Duration(*timeout))
 	}
 
-	robotgo.TypeString(*barcode)
+	go typeString(*barcode, done)
 
-	time.Sleep(time.Millisecond * 1000)
+	<-done
+
 	os.Exit(0)
+}
+
+func typeString(barcode string, done chan bool) {
+	robotgo.TypeString(barcode)
+	done <- true
 }
