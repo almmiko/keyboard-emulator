@@ -32,7 +32,7 @@ func main() {
 	os.Exit(0)
 }
 
-func typeString(barcode string, done chan bool) {
+func typeString(barcode string, done chan<- bool) {
 	robotgo.TypeString(barcode)
 	done <- true
 }
