@@ -3,9 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/go-vgo/robotgo"
 	"os"
+	"strings"
 	"time"
+	"unicode"
+
+	"github.com/go-vgo/robotgo"
 )
 
 func main() {
@@ -33,6 +36,23 @@ func main() {
 }
 
 func typeString(barcode string, done chan<- bool) {
-	robotgo.TypeString(barcode)
+
+	rawRunes := []rune(barcode)
+	var keys []string
+
+	for _, r := range rawRunes {
+		if unicode.IsUpper(r) && !unicode.IsDigit(r) {
+			keys = append(keys, "shift", strings.ToLower(string(r)))
+			continue
+		}
+
+		keys = append(keys, string(r))
+
+	}
+
+	for _, key := range keys {
+		robotgo.KeyTap(key)
+	}
+
 	done <- true
 }
